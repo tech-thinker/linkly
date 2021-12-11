@@ -13,3 +13,8 @@ type Service interface {
 	LoadInfo(string) (*models.URL, error)
 	Close() error
 }
+
+// GetDB returns the database connection.
+func GetDB() Service {
+	return interface{}(nil).(Service)
+}
