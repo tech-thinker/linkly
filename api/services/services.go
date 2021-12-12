@@ -1,9 +1,12 @@
 package services
 
 import (
+	"log"
+
 	"github.com/tech-thinker/linkly/api/controllers"
+	"github.com/tech-thinker/linkly/config"
 	"github.com/tech-thinker/linkly/repository"
-	"github.com/tech-thinker/linkly/storage"
+	"github.com/tech-thinker/linkly/storage/redis"
 )
 
 // Services interface of service
@@ -22,8 +25,16 @@ func (svc *services) URLService() controllers.URL {
 
 // NewServices returns new instance of service
 func NewServices() Services {
-	db := storage.GetDB()
+	config, err := config.FromFile("./config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	service, err := redis.New(config.Redis.Host, config.Redis.Port, config.Redis.Password)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return &services{url: controllers.NewURL(
-		repository.NewURLRepository(db),
+		repository.NewURLRepository(service),
 	)}
 }
