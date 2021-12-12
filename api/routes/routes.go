@@ -1,4 +1,4 @@
-package router
+package routes
 
 import (
 	"net/http"
@@ -8,12 +8,12 @@ import (
 )
 
 // New returns a new router
-func New(router *gin.Engine) {
+func New(routes *gin.Engine) {
 	// init services
 	svc := services.NewServices()
 	// routers
-	router.LoadHTMLGlob("templates/*")
-	router.GET("/", func(c *gin.Context) {
+	routes.LoadHTMLGlob("templates/*")
+	routes.GET("/", func(c *gin.Context) {
 		// Call the HTML method of the Context to render a template
 		c.HTML(
 			// Set the HTTP status to 200 (OK)
@@ -26,7 +26,7 @@ func New(router *gin.Engine) {
 			},
 		)
 	})
-	router.GET("/api/health", func(c *gin.Context) {
+	routes.GET("/api/health", func(c *gin.Context) {
 		c.JSON(
 			http.StatusOK,
 			gin.H{
@@ -34,22 +34,22 @@ func New(router *gin.Engine) {
 			},
 		)
 	})
-	router.GET("/api/links", func(c *gin.Context) {
+	routes.GET("/api/links", func(c *gin.Context) {
 		svc.URLService().FindAll(c)
 	})
-	router.POST("/api/links", func(c *gin.Context) {
+	routes.POST("/api/links", func(c *gin.Context) {
 		svc.URLService().Add(c)
 	})
-	router.GET("/api/links/:id", func(c *gin.Context) {
+	routes.GET("/api/links/:id", func(c *gin.Context) {
 		svc.URLService().Find(c)
 	})
-	router.DELETE("/api/links/:id", func(c *gin.Context) {
+	routes.DELETE("/api/links/:id", func(c *gin.Context) {
 		svc.URLService().Delete(c)
 	})
-	router.PATCH("/api/links/:id", func(c *gin.Context) {
+	routes.PATCH("/api/links/:id", func(c *gin.Context) {
 		svc.URLService().Update(c)
 	})
-	router.GET("/api/links/:id/stats", func(c *gin.Context) {
+	routes.GET("/api/links/:id/stats", func(c *gin.Context) {
 		c.JSON(
 			http.StatusOK,
 			gin.H{
