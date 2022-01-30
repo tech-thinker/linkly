@@ -1,14 +1,18 @@
 package repository
 
 import (
+	"errors"
+	"time"
+
 	"github.com/tech-thinker/linkly/models"
+	"github.com/tech-thinker/linkly/utils"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 )
 
 type URLRepo interface {
-	Add(ctx *gin.Context, url *models.Input) error
+	Add(ctx *gin.Context, url *models.URL) error
 	Get(ctx *gin.Context, url models.URL) (models.URL, error)
 	GetAndRedirect(ctx *gin.Context, url models.URL) (models.URL, error)
 	GetAll(ctx *gin.Context) ([]models.URL, error)
@@ -21,12 +25,33 @@ type urlRepo struct {
 }
 
 // Add a new url
-func (repo *urlRepo) Add(ctx *gin.Context, url *models.Input) error {
-	var shortUrl models.URL
-	shortUrl.URL = url.URL
-	shortUrl.ShortURL = url.ShortURL
-	shortUrl.Expires = url.Expires
-	result := repo.db.Create(&shortUrl)
+func (repo *urlRepo) Add(ctx *gin.Context, url *models.URL) error {
+	// check if url is valid
+	// if !utils.IsValidURL(url.URL) {
+	// 	return errors.New("invalid url")
+	// }
+
+	// check if url is already exists
+	result := repo.db.Find(&url, "url = ?", url.URL)
+	if result.Error != nil {
+		return result.Error
+	}
+	if url.ID > 0 {
+		expires, _ := time.Parse("2006-01-02", url.Expires)
+		if time.Now().After(expires) {
+			url.Expires = time.Now().AddDate(0, 0, 30).Format("2006-01-02")
+			go func() { _ = repo.db.Omit("ID").Save(&url) }()
+		}
+		return errors.New("url already exists")
+	}
+	// generate short url 62^7
+	url.ShortURL = utils.RandomChars(7)
+	// add expires in 30 days
+	// expires, _ := (time.Now().AddDate(0, 0, 30).MarshalText())
+	expires := time.Now().AddDate(0, 0, 30).Format("2006-01-02")
+	// expires = "2006-01-02"
+	url.Expires = expires
+	result = repo.db.Omit("Visits", "CreatedAt").Create(&url)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -39,6 +64,13 @@ func (repo *urlRepo) Get(ctx *gin.Context, url models.URL) (models.URL, error) {
 	if result.Error != nil {
 		return url, result.Error
 	}
+	// compare time if expired
+	if url.Expires != "" {
+		expires, _ := time.Parse("2006-01-02", url.Expires)
+		if time.Now().After(expires) {
+			return models.URL{}, errors.New("url has been expired")
+		}
+	}
 	return url, nil
 }
 
@@ -48,6 +80,21 @@ func (repo *urlRepo) GetAndRedirect(ctx *gin.Context, url models.URL) (models.UR
 	if result.Error != nil {
 		return url, result.Error
 	}
+	// compare time if expired
+	if url.Expires != "" {
+		expires, _ := time.Parse("2006-01-02", url.Expires)
+		if time.Now().After(expires) {
+			return models.URL{}, errors.New("url has been expired")
+		}
+	}
+	// increase visits field by one and save it
+	// url.Visits++
+	// result = repo.db.Save(&url)
+	go func() {
+		// increase visits field by one and save it
+		url.Visits++
+		_ = repo.db.Save(&url)
+	}()
 	return url, nil
 }
 
@@ -63,7 +110,7 @@ func (repo *urlRepo) GetAll(ctx *gin.Context) ([]models.URL, error) {
 
 // Update a url
 func (repo *urlRepo) Update(ctx *gin.Context, url *models.URL) error {
-	result := repo.db.Save(&url)
+	result := repo.db.Omit("UserID", "Visits", "CreatedAt").Save(&url)
 	if result.Error != nil {
 		return result.Error
 	}

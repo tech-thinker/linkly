@@ -32,13 +32,19 @@ func (u *url) Add(ctx *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var url models.Input
+	var url models.URL
 	err = json.Unmarshal(bytes, &url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	u.urlRepo.Add(ctx, &url)
-
+	err = u.urlRepo.Add(ctx, &url)
+	if err != nil {
+		ctx.JSON(404, gin.H{
+			"message": err.Error(),
+			"urls":    url,
+		})
+		return
+	}
 	ctx.JSON(200, gin.H{
 		"message": "Success",
 		"urls":    url,
@@ -54,7 +60,7 @@ func (u *url) Get(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.JSON(404, gin.H{
-			"message": "URL not found",
+			"message": err.Error(),
 		})
 		return
 	}
@@ -74,12 +80,17 @@ func (u *url) GetAndRedirect(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.JSON(404, gin.H{
-			"message": "URL not found",
+			"message": err.Error(),
 		})
 		return
 	}
+	// ctx.JSON(200, gin.H{
+	// 	"message": "Success",
+	// 	"urls":    url,
+	// })
 	redirectURL := "http://" + url.URL
-	ctx.Redirect(http.StatusMovedPermanently, redirectURL)
+	// Use http.StatusFound (302) to tell the http client to redirect
+	ctx.Redirect(http.StatusFound, redirectURL)
 }
 
 // GetAll : get all urls
@@ -88,7 +99,8 @@ func (u *url) GetAll(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.JSON(404, gin.H{
-			"message": "URL not found",
+			"message": err.Error(),
+			"urls":    urls,
 		})
 		return
 	}
@@ -106,7 +118,6 @@ func (u *url) Update(ctx *gin.Context) {
 		log.Fatal(err)
 	}
 	bytes, err := ioutil.ReadAll(ctx.Request.Body)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -117,16 +128,15 @@ func (u *url) Update(ctx *gin.Context) {
 		log.Fatal(err)
 	}
 	url.ID = uint64(id)
-
 	err = u.urlRepo.Update(ctx, &url)
 
 	if err != nil {
 		ctx.JSON(404, gin.H{
-			"message": "URL not found",
+			"message": err.Error(),
+			"urls":    url,
 		})
 		return
 	}
-
 	ctx.JSON(200, gin.H{
 		"message": "Success",
 		"urls":    url,
@@ -145,7 +155,8 @@ func (u *url) Delete(ctx *gin.Context) {
 	err = u.urlRepo.Delete(ctx, &url)
 	if err != nil {
 		ctx.JSON(404, gin.H{
-			"message": "URL not found",
+			"message": err.Error(),
+			"urls":    url,
 		})
 		return
 	}

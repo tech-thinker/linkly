@@ -25,7 +25,9 @@ func InitRoutes(routes *gin.Engine) {
 	routes.NoRoute(gin.WrapH(http.FileServer(http.FS(fsRoot))))
 
 	// redirect route
-	routes.GET("/:short_url", svc.URLService().GetAndRedirect)
+	routes.GET("/:short_url", func(c *gin.Context) {
+		svc.URLService().GetAndRedirect(c)
+	})
 	// api routes group
 	api := routes.Group("/api")
 	{
