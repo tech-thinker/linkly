@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tech-thinker/linkly/models"
@@ -113,23 +112,19 @@ func (u *url) GetAll(ctx *gin.Context) {
 
 // Update a url
 func (u *url) Update(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Read the body of the request
 	bytes, err := ioutil.ReadAll(ctx.Request.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	// Unmarshal the json into a url struct
 	var url models.URL
 	err = json.Unmarshal(bytes, &url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	url.ID = uint64(id)
+	// Update the url in the database
 	err = u.urlRepo.Update(ctx, &url)
-
 	if err != nil {
 		ctx.JSON(404, gin.H{
 			"message": err.Error(),
@@ -145,14 +140,8 @@ func (u *url) Update(ctx *gin.Context) {
 
 // Delete a url
 func (u *url) Delete(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-	if err != nil {
-		log.Fatal(err)
-	}
-	url := models.URL{
-		ID: uint64(id),
-	}
-	err = u.urlRepo.Delete(ctx, &url)
+	var url models.URL
+	err := u.urlRepo.Delete(ctx, &url)
 	if err != nil {
 		ctx.JSON(404, gin.H{
 			"message": err.Error(),

@@ -56,11 +56,11 @@ func InitRoutes(routes *gin.Engine) {
 				svc.URLService().Add(c)
 			},
 			)
-			links.PUT("/:id", func(c *gin.Context) {
+			links.PATCH("", func(c *gin.Context) {
 				svc.URLService().Update(c)
 			},
 			)
-			links.DELETE("/:id", func(c *gin.Context) {
+			links.DELETE("", func(c *gin.Context) {
 				svc.URLService().Delete(c)
 			},
 			)

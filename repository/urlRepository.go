@@ -27,21 +27,24 @@ type urlRepo struct {
 // Add a new url
 func (repo *urlRepo) Add(ctx *gin.Context, url *models.URL) error {
 	// check if url is valid
-	// if !utils.IsValidURL(url.URL) {
-	// 	return errors.New("invalid url")
-	// }
+	if url.URL == "" {
+		return errors.New("url is empty")
+	}
 
+	expires := url.Expires
 	// check if url is already exists
 	result := repo.db.Find(&url, "url = ?", url.URL)
 	if result.Error != nil {
 		return result.Error
 	}
 	if url.ID > 0 {
-		expires, _ := time.Parse("2006-01-02", url.Expires)
-		if time.Now().After(expires) {
-			url.Expires = time.Now().AddDate(0, 0, 30).Format("2006-01-02")
-			go func() { _ = repo.db.Omit("ID").Save(&url) }()
-		}
+		// url expiration removed
+		// expires, _ := time.Parse("2006-01-02", url.Expires)
+		// if time.Now().After(expires) {
+		// 	url.Expires = time.Now().AddDate(0, 0, 30).Format("2006-01-02")
+		// }
+		url.Expires = expires
+		go func() { _ = repo.db.Omit("ID").Save(&url) }()
 		return errors.New("url already exists")
 	}
 	// check if custom short url already exists
@@ -107,7 +110,9 @@ func (repo *urlRepo) GetAndRedirect(ctx *gin.Context, url models.URL) (models.UR
 	go func() {
 		// increase visits field by one and save it
 		url.Visits++
-		_ = repo.db.Save(&url)
+		if url.URL != "" {
+			_ = repo.db.Save(&url)
+		}
 	}()
 	return url, nil
 }
@@ -124,7 +129,14 @@ func (repo *urlRepo) GetAll(ctx *gin.Context) ([]models.URL, error) {
 
 // Update a url
 func (repo *urlRepo) Update(ctx *gin.Context, url *models.URL) error {
-	result := repo.db.Omit("UserID", "Visits", "CreatedAt").Save(&url)
+	var existingURL models.URL
+	result := repo.db.Find(&existingURL, "short_url = ?", url.ShortURL)
+	if result.Error != nil {
+		return result.Error
+	}
+	existingURL.Expires = url.Expires
+	// exclude unnecessary fields and update
+	result = repo.db.Omit("UpdatedAt").Save(&existingURL)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -133,7 +145,7 @@ func (repo *urlRepo) Update(ctx *gin.Context, url *models.URL) error {
 
 // Delete a url
 func (repo *urlRepo) Delete(ctx *gin.Context, url *models.URL) error {
-	result := repo.db.Delete(&url)
+	result := repo.db.Delete(&url, "short_url = ?", url.ShortURL)
 	if result.Error != nil {
 		return result.Error
 	}
