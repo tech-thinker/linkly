@@ -44,13 +44,27 @@ func (repo *urlRepo) Add(ctx *gin.Context, url *models.URL) error {
 		}
 		return errors.New("url already exists")
 	}
+	// check if custom short url already exists
+	if url.ShortURL != "" {
+		existingURL := models.URL{}
+		result = repo.db.Find(&existingURL, "short_url = ?", url.ShortURL)
+		if result.Error != nil {
+			return result.Error
+		}
+		if url.ShortURL == existingURL.ShortURL {
+			return errors.New("short url already exists")
+		}
+	}
 	// generate short url 62^7
-	url.ShortURL = utils.RandomChars(7)
-	// add expires in 30 days
-	// expires, _ := (time.Now().AddDate(0, 0, 30).MarshalText())
-	expires := time.Now().AddDate(0, 0, 30).Format("2006-01-02")
-	// expires = "2006-01-02"
-	url.Expires = expires
+	if url.ShortURL == "" {
+		url.ShortURL = utils.RandomChars(7)
+	}
+
+	// url expiration removed
+	// // add expires in 30 days
+	// expires := time.Now().AddDate(0, 0, 30).Format("2006-01-02")
+	// url.Expires = expires
+
 	result = repo.db.Omit("Visits", "CreatedAt").Create(&url)
 	if result.Error != nil {
 		return result.Error
