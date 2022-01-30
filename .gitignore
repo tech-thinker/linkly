@@ -10,7 +10,15 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+go-gin-boilerplate
+linkly
+
+# test db
+sqlite.db
+data.json
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-linkly
+
+# secrets
+.env
