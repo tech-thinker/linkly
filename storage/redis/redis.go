@@ -32,8 +32,23 @@ func (r *redis) Load(hash string) (string, error) {
 }
 
 // LoadAll return all links
+func LoadInfoAll() (*[]models.URL, error) {
+	return &[]models.URL{}, nil
+}
+
+// LoadInfo returns the link info
 func (r *redis) LoadInfo(code string) (*models.URL, error) {
 	return &models.URL{}, nil
+}
+
+// Update updates the link
+func (r *redis) Update(url string, expires time.Time) error {
+	return nil
+}
+
+// Delete deletes the link
+func (r *redis) Delete(url string) error {
+	return nil
 }
 
 // Close closes the redis connection
