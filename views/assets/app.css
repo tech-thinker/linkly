@@ -1,0 +1,244 @@
+/*
+ * app.css
+ */
+
+/* Variables */
+:root {
+  /* Light theme */
+  --accent: #ffc107;
+  --bg: #fafafa;
+  --sbg: #fafafa;
+  --fg: #212121;
+  --sfg: #212121;
+}
+
+/* Dark theme */
+.dark-mode {
+  --accent: #ffc107;
+  --bg: #212121;
+  --sbg: #212121;
+  --fg: #eceff1;
+  --sfg: #ffffff;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+
+  background: var(--bg);
+}
+
+* {
+  transition: all 0.3s;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background: var(--bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--fg);
+  text-decoration: none;
+  height: auto;
+}
+
+.navbar-brand img {
+  height: 3.5rem;
+  margin-right: 0.5rem;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--fg);
+}
+
+.nav-menu-links {
+  align-items: center;
+  padding: 0 4rem;
+  cursor: pointer;
+}
+
+.day-night {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 1.5rem;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 1.5rem;
+  color: var(--fg);
+}
+
+.wrapper h1 {
+  font-family: "Crimson Pro", serif;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 2rem;
+  color: var(--sfg);
+  line-height: 1;
+
+  margin-bottom: 1rem;
+}
+
+.wrapper h1 span {
+  font-style: normal;
+  color: #3f51b5;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--fg);
+  line-height: 1.625;
+}
+
+.output {
+  font-size: 1.25rem;
+  color: var(--fg);
+  line-height: 1.625;
+}
+
+.short_url {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid #616161;
+  margin: 1.5rem;
+}
+
+input:focus,
+button:focus {
+  outline: none;
+}
+
+.input-wrapper {
+  /* width: 80%; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 1.5rem;
+  color: var(--fg);
+  background: #ffffff;
+  border-radius: 3rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.create-url {
+  height: 2.5rem;
+  padding: 0.5rem;
+  border: none;
+  font-size: 1.25rem;
+  color: #212121;
+}
+
+.input-wrapper button {
+  padding: 0.5rem;
+  padding-right: 0;
+  border: none;
+  color: gray;
+}
+
+.input-wrapper button:hover {
+  color: #3f51b5;
+}
+
+.buttons {
+  margin: 2rem;
+}
+
+.buttons a {
+  display: inline-block;
+  width: 100%;
+
+  color: var(--sbg);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5rem;
+
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+
+  padding: 0.75rem 1.5rem;
+
+  background: #3f51b5;
+}
+
+.buttons a:hover {
+  background: #7986cb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2),
+    0 2px 4px -1px rgba(0, 0, 0, 0.19);
+}
+
+.buttons a:active {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2),
+    0 10px 10px -5px rgba(0, 0, 0, 0.17);
+}
+
+.buttons a:focus {
+  background: #7986cb;
+  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.3);
+
+  outline: none;
+}
+
+/* #urls {
+  width: 100%;
+  height: 100rem;
+  overflow: scroll;
+  overflow-y: hidden;
+  overflow-x: hidden;
+} */
+
+.url_element {
+  border: none;
+}
+
+.credits {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  text-align: center;
+  color: var(--fg);
+  font-size: 1rem;
+
+  padding: 1.5rem 0;
+}

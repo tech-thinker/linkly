@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linkly</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <link rel="stylesheet" href="assets/app.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="navbar">
+        <div class="navbar-menu">
+          <div class="navbar-brand">
+            <a href="">
+              <img src="assets/favicon.png" alt="Linkly" />
+            </a>
+          </div>
+          <div class="">
+            <a href="https://github.com/tech-thinker/linkly">GitHub</a>
+            <!-- <span class="nav-menu-links" onclick="viewURLs()">URLs</span> -->
+            <span class="nav-menu-links"><a href="/api/links">URLs</a></span>
+          </div>
+        </div>
+        <div class="nav-right-menu">
+          <div class="day-night">
+            <div id="daynight" style="cursor: pointer">
+              <div id="themeButton">
+                <svg
+                  style="
+                    width: 2rem;
+                    height: 2rem;
+                    color: #eceff1;
+                    display: inline-block;
+                  "
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokelinecap="round"
+                    strokelinejoin="round"
+                    strokewidth="2"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="content_container" class="wrapper">
+        <h1><span>Linkly</span> a url shorter service</h1>
+        <p class="subtitle">Cut your links shorter.</p>
+        <br />
+        <!-- #region -->
+        <div class="input-wrapper">
+          <form>
+            <input
+              id="input_url"
+              type="text"
+              class="create-url"
+              placeholder="Paste your link here"
+              value=""
+            />
+            <button type="button" class="" onclick="generateURL()">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="2.5rem"
+                height="2.5rem"
+                fill="currentColor"
+                version="1.1"
+                viewBox="0 0 24 24"
+              >
+                <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
+              </svg>
+            </button>
+          </form>
+        </div>
+        <br />
+        <div id="shorten_url" class="output"></div>
+      </div>
+      <p class="credits">
+        made with ❤️ by <a href="https://mrinjamul.in">Injamul M</a>
+      </p>
+    </div>
+    <script src="assets/app.js"></script>
+    <script src="assets/client.js"></script>
+  </body>
+</html>
