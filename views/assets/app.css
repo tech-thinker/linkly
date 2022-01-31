@@ -269,17 +269,9 @@ button:focus {
   outline: none;
 }
 
-/* #urls {
-  width: 100%;
-  height: 100rem;
-  overflow: scroll;
-  overflow-y: hidden;
-  overflow-x: hidden;
-} */
-
-.url_element {
+/* .url_element {
   border: none;
-}
+} */
 
 .credits {
   position: absolute;

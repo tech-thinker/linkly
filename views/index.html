@@ -20,8 +20,8 @@
           </div>
           <div class="">
             <a href="https://github.com/tech-thinker/linkly">GitHub</a>
-            <!-- <span class="nav-menu-links" onclick="viewURLs()">URLs</span> -->
-            <span class="nav-menu-links"><a href="/api/links">URLs</a></span>
+            <span class="nav-menu-links" onclick="viewURLs()">URLs</span>
+            <!-- <span class="nav-menu-links"><a href="/api/links">URLs</a></span> -->
           </div>
         </div>
         <div class="nav-right-menu">
@@ -59,7 +59,7 @@
         <br />
         <!-- #region -->
         <div class="input-container">
-          <form>
+          <form onsubmit="event.preventDefault();">
             <input
               id="input_url"
               type="text"

@@ -33,7 +33,7 @@ function generateURL() {
       return resp.json();
     })
     .then((data) => {
-      console.log(data);
+      // console.log(data);
       output.innerHTML = `
       <div class="short_url">
         <h3>
@@ -104,7 +104,7 @@ function viewURLs() {
   fetch(baseAPI + "/api/links")
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
+      // console.log(data);
       for (let i = 0; i < data.urls.length; i++) {
         document.getElementById("urls").innerHTML += `
       <div class="url_element">
@@ -118,3 +118,10 @@ function viewURLs() {
       }
     });
 }
+
+// Add event listener to keypress
+document.addEventListener("keypress", function (e) {
+  if (e.keyCode === 13) {
+    generateURL();
+  }
+});
