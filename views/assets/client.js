@@ -90,3 +90,31 @@ function copyToClipboard(elementId) {
   // Remove it from the body
   document.body.removeChild(aux);
 }
+
+function viewURLs() {
+  let baseAPI = window.location.origin;
+  let content = document.getElementById("content_container");
+  content.innerHTML = `
+  <div>
+  <h1><span>Linkly</span>: URLs</h1>
+  <hr/>
+  <div id="urls"></div>
+  </div>
+  `;
+  fetch(baseAPI + "/api/links")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      for (let i = 0; i < data.urls.length; i++) {
+        document.getElementById("urls").innerHTML += `
+      <div class="url_element">
+        <h2 class="">
+        ${data.urls[i].url} -> <a href="/${data.urls[i].short_url}">
+          ${baseAPI}/${data.urls[i].short_url}</a> , visits: ${data.urls[i].visits}
+        </h2>
+        <hr />
+      </div>
+        `;
+      }
+    });
+}
