@@ -40,7 +40,7 @@ function generateURL() {
           <a  id="output_url" href="${baseAPI}/${data.urls.short_url}" target="_blank">${baseAPI}/${data.urls.short_url}</a>
         </h3>
         <br/>
-        <button type="button" class="" onclick="copyToClipboard('output_url')">
+        <button id="clipboard" type="button" class="" onclick="copyToClipboard('output_url')">
           <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"

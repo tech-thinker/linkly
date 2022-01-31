@@ -140,12 +140,9 @@ hr {
   margin: 1.5rem;
 }
 
-input:focus,
-button:focus {
-  outline: none;
-}
+/* Input/Create Form */
 
-.input-wrapper {
+.input-container {
   /* width: 80%; */
   display: flex;
   flex-direction: column;
@@ -159,6 +156,16 @@ button:focus {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
 }
 
+.input-container button {
+  padding: 0.5rem;
+  padding-right: 0;
+  border: none;
+  color: gray;
+}
+.input-container button:hover {
+  color: #3f51b5;
+}
+
 .create-url {
   height: 2.5rem;
   padding: 0.5rem;
@@ -167,15 +174,59 @@ button:focus {
   color: #212121;
 }
 
-.input-wrapper button {
-  padding: 0.5rem;
-  padding-right: 0;
-  border: none;
-  color: gray;
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
-.input-wrapper button:hover {
-  color: #3f51b5;
+form {
+  position: relative;
+  width: 30rem;
+}
+
+.input-container input,
+.input-container button {
+  border: 0;
+  font-size: 1.8rem;
+}
+
+.input-container button {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-weight: bold;
+}
+
+input:not(:-moz-placeholder-shown) + button {
+  display: block;
+}
+input:not(:-ms-input-placeholder) + button {
+  display: block;
+}
+input:not(:placeholder-shown) + button {
+  display: block;
+}
+
+label {
+  position: absolute;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 0;
+  border: 0;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+}
+
+input:focus,
+button:focus {
+  outline: none;
+}
+/* Input form closed */
+
+#clipboard {
+  margin: 0 1em;
 }
 
 .buttons {
