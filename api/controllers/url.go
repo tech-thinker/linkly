@@ -38,13 +38,13 @@ func (u *url) Add(ctx *gin.Context) {
 	}
 	err = u.urlRepo.Add(ctx, &url)
 	if err != nil {
-		ctx.JSON(404, gin.H{
+		ctx.JSON(http.StatusAccepted, gin.H{
 			"message": err.Error(),
 			"urls":    url,
 		})
 		return
 	}
-	ctx.JSON(200, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Success",
 		"urls":    url,
 	})

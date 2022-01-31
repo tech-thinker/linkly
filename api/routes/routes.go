@@ -30,6 +30,7 @@ func InitRoutes(routes *gin.Engine) {
 	})
 	// api routes group
 	api := routes.Group("/api")
+	// api.Use(middleware.CORSMiddleware())
 	{
 		// health check
 		api.GET("/health", func(c *gin.Context) {
