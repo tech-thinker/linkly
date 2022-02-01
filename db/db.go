@@ -1,14 +1,52 @@
 package db
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/tech-thinker/linkly/models"
 
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func GetDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("sqlite.db"), &gorm.Config{})
+	var db *gorm.DB
+	// Get ENV variables
+	dbHost := os.Getenv("POSTGRES_HOST")
+	dbName := os.Getenv("POSTGRES_DB")
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbPort := os.Getenv("POSTGRES_PORT")
+	if db == nil {
+		if dbHost == "" {
+			fmt.Println("Environment variable DB_HOST is null.")
+			return nil
+		}
+		if dbName == "" {
+			fmt.Println("Environment variable DB_NAME is null.")
+			return nil
+		}
+		if dbUser == "" {
+			fmt.Println("Environment variable DB_USERNAME is null.")
+			return nil
+		}
+		if dbPassword == "" {
+			fmt.Println("Environment variable DB_PASSWORD is null.")
+			return nil
+		}
+
+		if dbPort == "" {
+			dbPort = "5432"
+		}
+	}
+
+	// Connect to db
+	dest := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Kolkata",
+		dbHost, dbUser, dbPassword, dbName, dbPort)
+	db, err := gorm.Open(postgres.Open(dest), &gorm.Config{})
+
 	if err != nil {
 		panic("failed to connect database")
 	}
