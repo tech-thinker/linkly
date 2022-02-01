@@ -8,8 +8,8 @@ type URL struct {
 	Expires   string `json:"expires"`
 	Visits    int    `json:"visits"`
 	UserID    string `json:"user_id"`
-	CreatedAt string `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt string `json:"updated_at" gorm:"autoUpdateTime"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 // Response struct
