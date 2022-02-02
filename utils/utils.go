@@ -2,6 +2,8 @@ package utils
 
 import (
 	"crypto/rand"
+
+	qrcode "github.com/skip2/go-qrcode"
 )
 
 // RandomChars generates a short url
@@ -49,4 +51,15 @@ func GenerateShortURL(url string) string {
 // IsValidURL checks if url is valid
 func IsValidURL(url string) bool {
 	return true
+}
+
+// GenerateQRCode
+func GenerateQRCode(content string) ([]byte, error) {
+	var qrCode []byte
+	var err error
+	qrCode, err = qrcode.Encode(content, qrcode.Medium, 256)
+	if err != nil {
+		return []byte{}, err
+	}
+	return qrCode, err
 }

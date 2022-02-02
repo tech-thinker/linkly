@@ -34,3 +34,11 @@ type User struct {
 	CreatedAt string `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt string `json:"updated_at" gorm:"autoUpdateTime"`
 }
+
+// QRCode struct
+type QRCode struct {
+	ID      uint64 `json:"id" gorm:"primary_key"`
+	UserID  string `json:"user_id"`
+	Content string `json:"content"`
+	Image   []byte `json:"image"`
+}

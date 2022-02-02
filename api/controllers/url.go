@@ -15,6 +15,7 @@ import (
 type URL interface {
 	Add(ctx *gin.Context)
 	Get(ctx *gin.Context)
+	GenQR(ctx *gin.Context)
 	GetAndRedirect(ctx *gin.Context)
 	GetAll(ctx *gin.Context)
 	Update(ctx *gin.Context)
@@ -68,6 +69,21 @@ func (u *url) Get(ctx *gin.Context) {
 		"message": "Success",
 		"urls":    url,
 	})
+}
+
+// GenQR generates qr code and returns the png
+func (u *url) GenQR(ctx *gin.Context) {
+	var qr models.QRCode
+	qr.Content = ctx.Param("short_url")
+	qr.Content = "http://" + "cut.mrinjamul.in" + "/" + qr.Content
+	qr, err := u.urlRepo.GenQR(ctx, qr)
+	if err != nil {
+		ctx.JSON(404, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.Data(200, "image/png", qr.Image)
 }
 
 // GetAndRedirect redirects to the original url

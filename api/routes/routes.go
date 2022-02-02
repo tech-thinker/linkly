@@ -28,6 +28,9 @@ func InitRoutes(routes *gin.Engine) {
 	routes.GET("/:short_url", func(c *gin.Context) {
 		svc.URLService().GetAndRedirect(c)
 	})
+	routes.GET("/:short_url/qr", func(c *gin.Context) {
+		svc.URLService().GenQR(c)
+	})
 	// api routes group
 	api := routes.Group("/api")
 	// api.Use(middleware.CORSMiddleware())
@@ -51,6 +54,10 @@ func InitRoutes(routes *gin.Engine) {
 			)
 			links.GET("/:short_url", func(c *gin.Context) {
 				svc.URLService().Get(c)
+			},
+			)
+			links.GET("/:short_url/qr", func(c *gin.Context) {
+				svc.URLService().GenQR(c)
 			},
 			)
 			links.POST("", func(c *gin.Context) {

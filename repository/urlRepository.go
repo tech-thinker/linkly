@@ -14,6 +14,7 @@ import (
 type URLRepo interface {
 	Add(ctx *gin.Context, url *models.URL) error
 	Get(ctx *gin.Context, url models.URL) (models.URL, error)
+	GenQR(ctx *gin.Context, url models.QRCode) (models.QRCode, error)
 	GetAndRedirect(ctx *gin.Context, url models.URL) (models.URL, error)
 	GetAll(ctx *gin.Context) ([]models.URL, error)
 	Update(ctx *gin.Context, url *models.URL) error
@@ -89,6 +90,17 @@ func (repo *urlRepo) Get(ctx *gin.Context, url models.URL) (models.URL, error) {
 		}
 	}
 	return url, nil
+}
+
+// GenQR generate qr code
+func (repo *urlRepo) GenQR(ctx *gin.Context, qr models.QRCode) (models.QRCode, error) {
+	var err error
+	// generate qr code
+	qr.Image, err = utils.GenerateQRCode(qr.Content)
+	if err != nil {
+		return qr, err
+	}
+	return qr, nil
 }
 
 // GetAndRedirect a url by short url
