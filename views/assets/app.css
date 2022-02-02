@@ -6,6 +6,12 @@
 :root {
   /* Light theme */
   --accent: #ffc107;
+  --text-denger: #ff0000;
+  --text-success: #28a745;
+  --text-info: #17a2b8;
+  --text-warning: #ffc107;
+  --button-primary: #28a745;
+  --button-secondary: #3f51b5;
   --bg: #fafafa;
   --sbg: #fafafa;
   --fg: #212121;
@@ -138,6 +144,20 @@ hr {
   border: none;
   border-bottom: 1px solid #616161;
   margin: 1.5rem;
+}
+
+/* Text colors */
+.text-success {
+  color: var(--text-success);
+}
+.text-info {
+  color: var(--text-info);
+}
+.text-danger {
+  color: var(--text-denger);
+}
+.text-warning {
+  color: var(--text-warning);
 }
 
 /* Input/Create Form */

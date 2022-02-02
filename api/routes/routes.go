@@ -66,5 +66,17 @@ func InitRoutes(routes *gin.Engine) {
 			},
 			)
 		}
+		// domains routes group
+		domains := api.Group("/domains")
+		{
+			// domains routes
+			domains.GET("", func(c *gin.Context) {
+				c.JSON(http.StatusNotImplemented, gin.H{
+					"message": "success",
+					"domains": "",
+				})
+
+			})
+		}
 	}
 }
