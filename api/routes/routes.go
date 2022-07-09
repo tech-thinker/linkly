@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/tech-thinker/linkly/api/services"
 
@@ -13,6 +14,11 @@ import (
 
 // ViewsFs for static files
 var ViewsFs embed.FS
+
+var (
+	StartTime time.Time
+	BootTime  time.Duration
+)
 
 func InitRoutes(routes *gin.Engine) {
 	svc := services.NewServices()
@@ -37,12 +43,7 @@ func InitRoutes(routes *gin.Engine) {
 	{
 		// health check
 		api.GET("/health", func(c *gin.Context) {
-			c.JSON(
-				http.StatusOK,
-				gin.H{
-					"health": "ok",
-				},
-			)
+			svc.HealthCheckService().HealthCheck(c, StartTime, BootTime)
 		})
 		// links routes group
 		links := api.Group("/links")
@@ -83,6 +84,23 @@ func InitRoutes(routes *gin.Engine) {
 					"domains": "",
 				})
 
+			})
+		}
+		// tracker
+		tracker := api.Group("/trackers")
+		{
+			// tracker routes
+			tracker.GET("", func(c *gin.Context) {
+				c.JSON(http.StatusNotImplemented, gin.H{
+					"message":  "success",
+					"trackers": "",
+				})
+			})
+			tracker.GET("/gen", func(c *gin.Context) {
+				c.JSON(http.StatusOK, gin.H{
+					"message": "success",
+					"url":     "",
+				})
 			})
 		}
 	}

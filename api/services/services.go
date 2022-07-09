@@ -8,14 +8,20 @@ import (
 
 type Services interface {
 	URLService() controllers.URL
+	HealthCheckService() controllers.HealthCheck
 }
 
 type services struct {
-	url controllers.URL
+	url         controllers.URL
+	healthCheck controllers.HealthCheck
 }
 
 func (svc *services) URLService() controllers.URL {
 	return svc.url
+}
+
+func (svc *services) HealthCheckService() controllers.HealthCheck {
+	return svc.healthCheck
 }
 
 // NewServices initializes services
@@ -25,5 +31,6 @@ func NewServices() Services {
 		url: controllers.NewURL(
 			repository.NewURLRepo(db),
 		),
+		healthCheck: controllers.NewHealthCheck(),
 	}
 }

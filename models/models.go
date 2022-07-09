@@ -42,3 +42,8 @@ type QRCode struct {
 	Content string `json:"content"`
 	Image   []byte `json:"image"`
 }
+
+// Domain struct
+type Domain struct {
+	ID uint64 `json:"id"`
+}

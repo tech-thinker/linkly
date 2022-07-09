@@ -2,12 +2,18 @@ package db
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/tech-thinker/linkly/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+)
+
+var (
+	// IsConnected returns the connection status
+	IsConnected bool
 )
 
 func GetDB() *gorm.DB {
@@ -46,10 +52,12 @@ func GetDB() *gorm.DB {
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Kolkata",
 		dbHost, dbUser, dbPassword, dbName, dbPort)
 	db, err := gorm.Open(postgres.Open(dest), &gorm.Config{})
-
-	if err != nil {
-		panic("failed to connect database")
+	if err == nil {
+		IsConnected = true
+	} else {
+		log.Println("failed to connect database")
 	}
+
 	// Migrate the schema
 	db.AutoMigrate(&models.URL{})
 	return db
