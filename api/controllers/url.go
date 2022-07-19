@@ -37,6 +37,10 @@ func (u *url) Add(ctx *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Get IP from context
+	ip := ctx.ClientIP()
+	url.IP = ip
 	err = u.urlRepo.Add(ctx, &url)
 	if err != nil {
 		ctx.JSON(http.StatusAccepted, gin.H{

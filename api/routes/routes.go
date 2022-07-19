@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/mrinjamul/gnote/middleware"
 	"github.com/tech-thinker/linkly/api/services"
 
 	"github.com/gin-gonic/gin"
@@ -65,11 +66,11 @@ func InitRoutes(routes *gin.Engine) {
 				svc.URLService().Add(c)
 			},
 			)
-			links.PATCH("", func(c *gin.Context) {
+			links.PATCH("", middleware.JWTAuth(), func(c *gin.Context) {
 				svc.URLService().Update(c)
 			},
 			)
-			links.DELETE("", func(c *gin.Context) {
+			links.DELETE("", middleware.JWTAuth(), func(c *gin.Context) {
 				svc.URLService().Delete(c)
 			},
 			)
