@@ -69,7 +69,7 @@ func (repo *urlRepo) Add(ctx *gin.Context, url *models.URL) error {
 	// expires := time.Now().AddDate(0, 0, 30).Format("2006-01-02")
 	// url.Expires = expires
 
-	result = repo.db.Omit("Visits", "CreatedAt").Create(&url)
+	result = repo.db.Omit("Visits").Create(&url)
 	if result.Error != nil {
 		return result.Error
 	}
