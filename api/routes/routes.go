@@ -9,8 +9,11 @@ import (
 
 	"github.com/mrinjamul/gnote/middleware"
 	"github.com/tech-thinker/linkly/api/services"
+	"github.com/tech-thinker/linkly/docs"
 
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // ViewsFs for static files
@@ -31,6 +34,9 @@ func InitRoutes(routes *gin.Engine) {
 	}
 	routes.NoRoute(gin.WrapH(http.FileServer(http.FS(fsRoot))))
 
+	// Backend API
+	docs.SwaggerInfo.BasePath = "/"
+
 	// redirect route
 	routes.GET("/:short_url", func(c *gin.Context) {
 		svc.URLService().GetAndRedirect(c)
@@ -40,6 +46,7 @@ func InitRoutes(routes *gin.Engine) {
 	})
 	// api routes group
 	api := routes.Group("/api")
+	// v1 := api.Group("/v1")
 	// api.Use(middleware.CORSMiddleware())
 	{
 		// health check
@@ -105,4 +112,5 @@ func InitRoutes(routes *gin.Engine) {
 			})
 		}
 	}
+	routes.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }

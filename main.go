@@ -11,6 +11,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @title Linkly API
+// @version 1.0
+// @description URL shortener API
+// @termsOfService /terms/
+// @contact.name API Support
+// @contact.url /support
+// @contact.email
+// @license.name MIT License
+// @license.url https://github.com/tech-thinker/linkly/blob/main/LICENSE
+// @host localhost:3000
+// @BasePath /
+// @schemes http https
+// @securityDefinitions.basic BasicAuth
+// @securityDefinitions.apikey ApiKeyAuth
+
 //go:embed views/*
 var viewsFs embed.FS
 
