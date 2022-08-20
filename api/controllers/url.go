@@ -1,174 +1,120 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tech-thinker/linkly/models"
 
+	"github.com/tech-thinker/linkly/models"
 	"github.com/tech-thinker/linkly/repository"
 )
 
 type URL interface {
-	Add(ctx *gin.Context)
-	Get(ctx *gin.Context)
+	Redirect(ctx *gin.Context)
+	Track(ctx *gin.Context)
 	GenQR(ctx *gin.Context)
-	GetAndRedirect(ctx *gin.Context)
-	GetAll(ctx *gin.Context)
-	Update(ctx *gin.Context)
-	Delete(ctx *gin.Context)
 }
 
 type url struct {
-	urlRepo repository.URLRepo
+	url repository.URL
 }
 
-// Add a new url
-func (u *url) Add(ctx *gin.Context) {
-
-	var url models.URL
-	err := json.NewDecoder(ctx.Request.Body).Decode(&url)
+// Redirect redirects to the target url
+// @Summary Redirect to the target url
+// @Description Redirect to the target url
+// @ID redirect
+// @Tags URL Shortener
+// @Accept  json
+// @Produce  json
+// @Success 302 {string} string
+// @Failure 500 {object} models.Error
+// @Router /{link} [get]
+func (u *url) Redirect(ctx *gin.Context) {
+	url := ctx.Param("link")
+	link, err := u.url.Redirect(ctx, models.Link{Link: &url})
 	if err != nil {
-		return
-	}
-
-	// Get IP from context
-	ip := ctx.ClientIP()
-	url.IP = ip
-	err = u.urlRepo.Add(ctx, &url)
-	if err != nil {
-		ctx.JSON(http.StatusAccepted, gin.H{
-			"message": err.Error(),
-			"urls":    url,
+		ctx.JSON(http.StatusInternalServerError, models.Error{
+			Error: models.ServiceError{
+				Type:   "internal_error",
+				Title:  "An internal error has occurred",
+				Detail: err.Error(),
+				Status: http.StatusInternalServerError,
+			},
 		})
+		ctx.Redirect(http.StatusMovedPermanently, "/")
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Success",
-		"urls":    url,
+	if time.Since(*link.ExpireAt).Seconds() > 0 {
+		ctx.JSON(http.StatusInternalServerError, models.Error{
+			Error: models.ServiceError{
+				Type:   "internal_error",
+				Title:  "An internal error has occurred",
+				Detail: "link has expired",
+				Status: http.StatusInternalServerError,
+			},
+		})
+		ctx.Redirect(http.StatusMovedPermanently, "/")
+		return
+	}
+
+	// Use http.StatusFound (302) to tell the http client to redirect
+	target := *link.Target
+	ctx.Redirect(http.StatusFound, target)
+}
+
+// Track tracks a url
+// @Summary Track a url
+// @Description Track a url
+// @ID track
+// @Tags URL Shortener
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} models.Link
+// @Failure 500 {object} models.Error
+// @Router /{link}/track [get]
+func (u *url) Track(ctx *gin.Context) {
+	url := ctx.Param("link")
+
+	ctx.JSON(http.StatusOK, models.Link{
+		Link: &url,
 	})
 }
 
-// Get a url by short url
-func (u *url) Get(ctx *gin.Context) {
-	var url models.URL
-	url.ShortURL = ctx.Param("short_url")
-
-	url, err := u.urlRepo.Get(ctx, url)
-
-	if err != nil {
-		ctx.JSON(404, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
-
-	ctx.JSON(200, gin.H{
-		"message": "Success",
-		"urls":    url,
-	})
-}
-
-// GenQR generates qr code and returns the png
+// GenQR generates a QR code for the short url
+// @Summary Generate a QR code for the short url
+// @Description Generate a QR code for the short url
+// @ID generate-qr
+// @Tags URL Shortener
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} models.QRCode.Image
+// @Failure 500 {object} models.Error
+// @Router /{link}/qrcode [get]
 func (u *url) GenQR(ctx *gin.Context) {
 	var qr models.QRCode
-	qr.Content = ctx.Param("short_url")
-	qr.Content = "http://" + "cut.mrinjamul.in" + "/" + qr.Content
-	qr, err := u.urlRepo.GenQR(ctx, qr)
+	qr.Content = ctx.Param("link")
+	hostname := ctx.Request.Host
+	qr.Content = "http://" + hostname + "/" + qr.Content
+	qr, err := u.url.GenQR(ctx, qr)
 	if err != nil {
-		ctx.JSON(404, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
-	ctx.Data(200, "image/png", qr.Image)
-}
-
-// GetAndRedirect redirects to the original url
-func (u *url) GetAndRedirect(ctx *gin.Context) {
-	var url models.URL
-	url.ShortURL = ctx.Param("short_url")
-
-	url, err := u.urlRepo.GetAndRedirect(ctx, url)
-
-	if err != nil {
-		ctx.JSON(404, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
-	// ctx.JSON(200, gin.H{
-	// 	"message": "Success",
-	// 	"urls":    url,
-	// })
-	redirectURL := "http://" + url.URL
-	// Use http.StatusFound (302) to tell the http client to redirect
-	ctx.Redirect(http.StatusFound, redirectURL)
-}
-
-// GetAll : get all urls
-func (u *url) GetAll(ctx *gin.Context) {
-	urls, err := u.urlRepo.GetAll(ctx)
-
-	if err != nil {
-		ctx.JSON(404, gin.H{
-			"message": err.Error(),
-			"urls":    urls,
+		ctx.JSON(http.StatusInternalServerError, models.Error{
+			Error: models.ServiceError{
+				Type:   "internal_error",
+				Title:  "An internal error has occurred",
+				Detail: err.Error(),
+				Status: http.StatusInternalServerError,
+			},
 		})
 		return
 	}
 
-	ctx.JSON(200, gin.H{
-		"message": "Success",
-		"urls":    urls,
-	})
-}
-
-// Update a url
-func (u *url) Update(ctx *gin.Context) {
-	var url models.URL
-	// Unmarshal the json into a url struct
-	err := json.NewDecoder(ctx.Request.Body).Decode(&url)
-	if err != nil {
-		return
-	}
-
-	// Update the url in the database
-	err = u.urlRepo.Update(ctx, &url)
-	if err != nil {
-		ctx.JSON(404, gin.H{
-			"message": err.Error(),
-			"urls":    url,
-		})
-		return
-	}
-	ctx.JSON(200, gin.H{
-		"message": "Success",
-		"urls":    url,
-	})
-}
-
-// Delete a url
-func (u *url) Delete(ctx *gin.Context) {
-	var url models.URL
-	err := u.urlRepo.Delete(ctx, &url)
-	if err != nil {
-		ctx.JSON(404, gin.H{
-			"message": err.Error(),
-			"urls":    url,
-		})
-		return
-	}
-	ctx.JSON(200, gin.H{
-		"message": "Success",
-		"urls":    url,
-	})
+	ctx.Data(http.StatusOK, "image/png", qr.Image)
 }
 
 // NewURL returns a new url controller
-func NewURL(urlRepo repository.URLRepo) URL {
+func NewURL(urlRepo repository.URL) URL {
 	return &url{
-		urlRepo: urlRepo,
+		url: urlRepo,
 	}
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tech-thinker/linkly/models"
+	"github.com/tech-thinker/linkly/utils"
 	"gorm.io/gorm"
 )
 
@@ -19,6 +20,10 @@ type Link interface {
 	Update(ctx *gin.Context, link *models.Link) error
 	// Delete removes a link from the database
 	Delete(ctx *gin.Context, link *models.Link) error
+	// GetStats returns stats of the link
+	GetStats(ctx *gin.Context, link models.Link) (models.Stat, error)
+	// GenQRCode generates a qr code for the link
+	GenQRCode(ctx *gin.Context, link models.Link) (models.QRCode, error)
 }
 
 type link struct {
@@ -78,14 +83,23 @@ func (repo *link) Create(ctx *gin.Context, link *models.Link) error {
 func (repo *link) Read(ctx *gin.Context, link models.Link) (models.Link, error) {
 	var l models.Link
 	// check if link is valid
-	if link.ID == "" {
+	if link.ID == "" && link.Address == nil {
 		return l, errors.New("id is empty")
 	}
-	// Find link by id
-	result := repo.db.Find(&l, "id = ?", link.ID)
-	if result.Error != nil {
-		return l, result.Error
+	// if link is not found then try to find link by address
+	if link.ID == "" {
+		result := repo.db.Find(&l, "address = ?", link.Address)
+		if result.Error != nil {
+			return l, result.Error
+		}
+	} else {
+		// Find link by id
+		result := repo.db.Find(&l, "id = ?", link.ID)
+		if result.Error != nil {
+			return l, result.Error
+		}
 	}
+
 	return l, nil
 }
 
@@ -183,6 +197,33 @@ func (repo *link) Delete(ctx *gin.Context, link *models.Link) error {
 	}
 
 	return nil
+}
+
+// GetStats returns stats of the link
+func (repo *link) GetStats(ctx *gin.Context, link models.Link) (models.Stat, error) {
+	var stat models.Stat
+	result := repo.db.Find(&stat, "link = ?", link.Link)
+	if result.Error != nil {
+		return stat, result.Error
+	}
+	return stat, nil
+}
+
+// GenQRCode generates a qr code for the link
+func (repo *link) GenQRCode(ctx *gin.Context, link models.Link) (models.QRCode, error) {
+	var qrCode models.QRCode
+	var err error
+	result := repo.db.Find(&link, "id = ?", link.ID)
+	if result.Error != nil {
+		return qrCode, result.Error
+	}
+	// generate qr code
+	addr := ctx.Request.Host + "/" + *link.Link
+	qrCode.Image, err = utils.GenerateQRCode(addr)
+	if err != nil {
+		return qrCode, err
+	}
+	return qrCode, nil
 }
 
 // NewLink returns a new instance of the link repository

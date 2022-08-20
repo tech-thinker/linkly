@@ -2,14 +2,11 @@ package routes
 
 import (
 	"embed"
-	"io/fs"
-	"log"
-	"net/http"
 	"time"
 
-	"github.com/mrinjamul/gnote/middleware"
 	"github.com/tech-thinker/linkly/api/services"
 	"github.com/tech-thinker/linkly/docs"
+	"github.com/tech-thinker/linkly/middleware"
 
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -29,25 +26,20 @@ func InitRoutes(router *gin.Engine) {
 	svc := services.NewServices()
 
 	// Serve the frontend
-	fsRoot, err := fs.Sub(ViewsFs, "views")
-	if err != nil {
-		log.Println(err)
-	}
-	router.NoRoute(gin.WrapH(http.FileServer(http.FS(fsRoot))))
-
-	// Backend API
-	docs.SwaggerInfo.BasePath = "/"
-
+	router.NoRoute(func(ctx *gin.Context) {
+		svc.ViewService().Index(ctx, ViewsFs)
+	})
 	// URL Redirect
-	router.GET("/:short_url", func(c *gin.Context) {
-		svc.URLService().GetAndRedirect(c)
+	router.GET("/:link", func(c *gin.Context) {
+		svc.URLService().Redirect(c)
 	})
 	// Generate QR Code for the short url
-	router.GET("/:short_url/qr", func(c *gin.Context) {
+	router.GET("/:link/qrcode", func(c *gin.Context) {
 		svc.URLService().GenQR(c)
 	})
 
-	// API Routes
+	// Backend API
+	docs.SwaggerInfo.BasePath = "/"
 	api := router.Group("/api")
 	api.Use(middleware.CORSMiddleware())
 	v1 := api.Group("/v1")
@@ -56,64 +48,56 @@ func InitRoutes(router *gin.Engine) {
 		api.GET("/health", func(c *gin.Context) {
 			svc.HealthCheckService().HealthCheck(c, StartTime, BootTime)
 		})
+
 		// links routes
 		links := v1.Group("/links")
 		{
 			// link routes
 			links.GET("", func(c *gin.Context) {
-				svc.URLService().GetAll(c)
-			},
-			)
-			links.GET("/:short_url", func(c *gin.Context) {
-				svc.URLService().Get(c)
-			},
-			)
-			links.GET("/:short_url/qr", func(c *gin.Context) {
-				svc.URLService().GenQR(c)
-			},
-			)
+				svc.LinkService().GetLinks(c)
+			})
 			links.POST("", func(c *gin.Context) {
-				svc.URLService().Add(c)
-			},
-			)
-			links.PATCH("", middleware.JWTAuth(), func(c *gin.Context) {
-				svc.URLService().Update(c)
-			},
-			)
-			links.DELETE("", middleware.JWTAuth(), func(c *gin.Context) {
-				svc.URLService().Delete(c)
-			},
-			)
+				svc.LinkService().AddLink(c)
+			})
+			links.GET("/:id", func(c *gin.Context) {
+				svc.LinkService().GetLink(c)
+			})
+			links.GET("/:id/qrcode", func(c *gin.Context) {
+				svc.LinkService().GenQRCode(c)
+			})
+			links.PATCH("/:id", func(c *gin.Context) {
+				svc.LinkService().UpdateLink(c)
+			})
+			links.DELETE("/:id", func(c *gin.Context) {
+				svc.LinkService().DeleteLink(c)
+			})
+			links.GET("/:id/stats", func(c *gin.Context) {
+				svc.LinkService().GetLinkStats(c)
+			})
 		}
+
 		// domains routes
 		domains := v1.Group("/domains")
 		{
 			// domain routes
 			domains.GET("", func(c *gin.Context) {
-				c.JSON(http.StatusNotImplemented, gin.H{
-					"message": "success",
-					"domains": "",
-				})
-
+				svc.DomainService().GetDomains(c)
 			})
 		}
+
 		// tracker routes
 		tracker := v1.Group("/trackers")
 		{
 			// tracker routes
 			tracker.GET("", func(c *gin.Context) {
-				c.JSON(http.StatusNotImplemented, gin.H{
-					"message":  "success",
-					"trackers": "",
-				})
+				svc.TrackerService().GetTrackers(c)
 			})
 			tracker.GET("/gen", func(c *gin.Context) {
-				c.JSON(http.StatusOK, gin.H{
-					"message": "success",
-					"url":     "",
-				})
+				svc.TrackerService().GenerateTracker(c)
 			})
 		}
 	}
+
+	// swagger documentation
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }

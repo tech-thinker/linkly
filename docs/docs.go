@@ -44,6 +44,391 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/domains": {
+            "get": {
+                "description": "Get all domains",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "domains"
+                ],
+                "summary": "Get all domains",
+                "operationId": "get-domains",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Domain"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/links": {
+            "get": {
+                "description": "Get list of links",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Get all links",
+                "operationId": "get-all-links",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Link"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Add a new link",
+                "operationId": "add-new-link",
+                "parameters": [
+                    {
+                        "description": "Link",
+                        "name": "link",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LinkBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Link"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/links/{id}": {
+            "get": {
+                "description": "Get a link",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Get a link",
+                "operationId": "get-a-link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Link"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Update a link",
+                "operationId": "update-link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Link",
+                        "name": "link",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LinkBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Link"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a link",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Delete a link",
+                "operationId": "delete-link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Link"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/links/{id}/qrcode": {
+            "get": {
+                "description": "Generate a qr code for a link",
+                "produces": [
+                    "application/json",
+                    "data:image/png"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Generate a qr code for a link",
+                "operationId": "generate-qr-code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/links/{id}/stats": {
+            "get": {
+                "description": "Get stats of a link",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Get stats of a link",
+                "operationId": "get-link-stats",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Stat"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/trackers": {
+            "get": {
+                "description": "Get all trackers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trackers"
+                ],
+                "summary": "Get all trackers",
+                "operationId": "get-trackers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Tracker"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Generate a new tracker",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trackers"
+                ],
+                "summary": "Generate a new tracker",
+                "operationId": "generate-tracker",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Tracker"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -91,6 +476,312 @@ const docTemplate = `{
                 },
                 "version": {
                     "description": "Version is the go version.",
+                    "type": "string"
+                }
+            }
+        },
+        "models.Browser": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name is the name of the browser",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Value is the number of times the browser was visited",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Country": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name is the name of the country",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Value is the number of times the country was visited",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Domain": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "Address is the address of the domain",
+                    "type": "string"
+                },
+                "banned": {
+                    "description": "Banned is a boolean that determines if the domain is banned",
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "description": "CreatedAt is the time the domain was created",
+                    "type": "string"
+                },
+                "homepage": {
+                    "description": "Homepage is the homepage of the domain",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID is the primary key for the domain. generates uuid using gorm",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt is the time the domain was updated",
+                    "type": "string"
+                }
+            }
+        },
+        "models.Error": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/models.ServiceError"
+                }
+            }
+        },
+        "models.Link": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "Address is the address of the link",
+                    "type": "string"
+                },
+                "banned": {
+                    "description": "Banned is a boolean that determines if the link is banned",
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "description": "Stats is the stats for the link\nStats Stat ` + "`" + `json:\"stats,omitempty\"` + "`" + `\n CreatedAt is the time the link was created",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description is the description for the link",
+                    "type": "string"
+                },
+                "expire_at": {
+                    "description": "ExipreAt is the time when the link expires",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID is the primary key for the link. generates uuid using gorm",
+                    "type": "string"
+                },
+                "ip": {
+                    "description": "IP is the ip address of the user who created the link [security,spam]",
+                    "type": "string"
+                },
+                "link": {
+                    "description": "Link is the unique address that is being stored",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "Password is the password for the link",
+                    "type": "string"
+                },
+                "reusable": {
+                    "description": "Reusable is a boolean that determines if the link is reusable",
+                    "type": "boolean"
+                },
+                "target": {
+                    "description": "Target is the target for the link",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt is the time the link was last updated",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "UserID is the user who created the link",
+                    "type": "string"
+                },
+                "visit_count": {
+                    "description": "VisitCount is the number of times the link has been visited",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.LinkBody": {
+            "type": "object",
+            "properties": {
+                "customurl": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "expire_in": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "reusable": {
+                    "type": "boolean"
+                },
+                "target": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.OS": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name is the name of the operating system",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Value is the number of times the operating system was visited",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Referrer": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name is the name of the referrer",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Value is the number of times the referrer was visited",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ServiceError": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Stat": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "Address is the address of the link",
+                    "type": "string"
+                },
+                "all_time": {
+                    "description": "AllTime is the number of times the link has been visited",
+                    "$ref": "#/definitions/models.StatItem"
+                },
+                "banned": {
+                    "description": "Banned is a boolean that determines if the link is banned",
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "description": "CreatedAt is the time the link was created",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description is the description for the link",
+                    "type": "string"
+                },
+                "expire_at": {
+                    "description": "ExipreAt is the time when the link expires",
+                    "type": "string"
+                },
+                "ip": {
+                    "description": "IP is the ip address of the user who created the link [security,spam]",
+                    "type": "string"
+                },
+                "last_day": {
+                    "description": "LastDay is the number of times the link has been visited in the last day",
+                    "$ref": "#/definitions/models.StatItem"
+                },
+                "last_month": {
+                    "description": "LastMonth is the number of times the link has been visited in the last month",
+                    "$ref": "#/definitions/models.StatItem"
+                },
+                "last_week": {
+                    "description": "LastWeek is the number of times the link has been visited in the last week",
+                    "$ref": "#/definitions/models.StatItem"
+                },
+                "link": {
+                    "description": "Link is the unique address that is being stored",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "Password is the password for the link",
+                    "type": "string"
+                },
+                "reusable": {
+                    "description": "Reusable is a boolean that determines if the link is reusable",
+                    "type": "boolean"
+                },
+                "target": {
+                    "description": "Target is the target for the link",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt is the time the link was last updated",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "UserID is the user who created the link",
+                    "type": "string"
+                }
+            }
+        },
+        "models.StatItem": {
+            "type": "object",
+            "properties": {
+                "browser": {
+                    "description": "Browser is the browser the link was visited from",
+                    "$ref": "#/definitions/models.Browser"
+                },
+                "country": {
+                    "description": "Country is the country the link was visited from",
+                    "$ref": "#/definitions/models.Country"
+                },
+                "os": {
+                    "description": "OS is the operating system the link was visited from",
+                    "$ref": "#/definitions/models.OS"
+                },
+                "referrer": {
+                    "description": "Referrer is the referrer the link was visited from",
+                    "$ref": "#/definitions/models.Referrer"
+                },
+                "views": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Tracker": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

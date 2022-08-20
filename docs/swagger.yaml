@@ -35,6 +35,228 @@ definitions:
         description: Version is the go version.
         type: string
     type: object
+  models.Browser:
+    properties:
+      name:
+        description: Name is the name of the browser
+        type: string
+      value:
+        description: Value is the number of times the browser was visited
+        type: integer
+    type: object
+  models.Country:
+    properties:
+      name:
+        description: Name is the name of the country
+        type: string
+      value:
+        description: Value is the number of times the country was visited
+        type: integer
+    type: object
+  models.Domain:
+    properties:
+      address:
+        description: Address is the address of the domain
+        type: string
+      banned:
+        description: Banned is a boolean that determines if the domain is banned
+        type: boolean
+      created_at:
+        description: CreatedAt is the time the domain was created
+        type: string
+      homepage:
+        description: Homepage is the homepage of the domain
+        type: string
+      id:
+        description: ID is the primary key for the domain. generates uuid using gorm
+        type: string
+      updated_at:
+        description: UpdatedAt is the time the domain was updated
+        type: string
+    type: object
+  models.Error:
+    properties:
+      error:
+        $ref: '#/definitions/models.ServiceError'
+    type: object
+  models.Link:
+    properties:
+      address:
+        description: Address is the address of the link
+        type: string
+      banned:
+        description: Banned is a boolean that determines if the link is banned
+        type: boolean
+      created_at:
+        description: |-
+          Stats is the stats for the link
+          Stats Stat `json:"stats,omitempty"`
+           CreatedAt is the time the link was created
+        type: string
+      description:
+        description: Description is the description for the link
+        type: string
+      expire_at:
+        description: ExipreAt is the time when the link expires
+        type: string
+      id:
+        description: ID is the primary key for the link. generates uuid using gorm
+        type: string
+      ip:
+        description: IP is the ip address of the user who created the link [security,spam]
+        type: string
+      link:
+        description: Link is the unique address that is being stored
+        type: string
+      password:
+        description: Password is the password for the link
+        type: string
+      reusable:
+        description: Reusable is a boolean that determines if the link is reusable
+        type: boolean
+      target:
+        description: Target is the target for the link
+        type: string
+      updated_at:
+        description: UpdatedAt is the time the link was last updated
+        type: string
+      user_id:
+        description: UserID is the user who created the link
+        type: string
+      visit_count:
+        description: VisitCount is the number of times the link has been visited
+        type: integer
+    type: object
+  models.LinkBody:
+    properties:
+      customurl:
+        type: string
+      description:
+        type: string
+      domain:
+        type: string
+      expire_in:
+        type: string
+      password:
+        type: string
+      reusable:
+        type: boolean
+      target:
+        type: string
+    type: object
+  models.OS:
+    properties:
+      name:
+        description: Name is the name of the operating system
+        type: string
+      value:
+        description: Value is the number of times the operating system was visited
+        type: integer
+    type: object
+  models.Referrer:
+    properties:
+      name:
+        description: Name is the name of the referrer
+        type: string
+      value:
+        description: Value is the number of times the referrer was visited
+        type: integer
+    type: object
+  models.ServiceError:
+    properties:
+      detail:
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  models.Stat:
+    properties:
+      address:
+        description: Address is the address of the link
+        type: string
+      all_time:
+        $ref: '#/definitions/models.StatItem'
+        description: AllTime is the number of times the link has been visited
+      banned:
+        description: Banned is a boolean that determines if the link is banned
+        type: boolean
+      created_at:
+        description: CreatedAt is the time the link was created
+        type: string
+      description:
+        description: Description is the description for the link
+        type: string
+      expire_at:
+        description: ExipreAt is the time when the link expires
+        type: string
+      ip:
+        description: IP is the ip address of the user who created the link [security,spam]
+        type: string
+      last_day:
+        $ref: '#/definitions/models.StatItem'
+        description: LastDay is the number of times the link has been visited in the
+          last day
+      last_month:
+        $ref: '#/definitions/models.StatItem'
+        description: LastMonth is the number of times the link has been visited in
+          the last month
+      last_week:
+        $ref: '#/definitions/models.StatItem'
+        description: LastWeek is the number of times the link has been visited in
+          the last week
+      link:
+        description: Link is the unique address that is being stored
+        type: string
+      password:
+        description: Password is the password for the link
+        type: string
+      reusable:
+        description: Reusable is a boolean that determines if the link is reusable
+        type: boolean
+      target:
+        description: Target is the target for the link
+        type: string
+      updated_at:
+        description: UpdatedAt is the time the link was last updated
+        type: string
+      user_id:
+        description: UserID is the user who created the link
+        type: string
+    type: object
+  models.StatItem:
+    properties:
+      browser:
+        $ref: '#/definitions/models.Browser'
+        description: Browser is the browser the link was visited from
+      country:
+        $ref: '#/definitions/models.Country'
+        description: Country is the country the link was visited from
+      os:
+        $ref: '#/definitions/models.OS'
+        description: OS is the operating system the link was visited from
+      referrer:
+        $ref: '#/definitions/models.Referrer'
+        description: Referrer is the referrer the link was visited from
+      views:
+        type: integer
+    type: object
+  models.Tracker:
+    properties:
+      content:
+        type: string
+      id:
+        type: string
+      image:
+        items:
+          type: integer
+        type: array
+      user_id:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -62,6 +284,264 @@ paths:
       summary: Show the status of the system.
       tags:
       - health
+  /api/v1/domains:
+    get:
+      consumes:
+      - application/json
+      description: Get all domains
+      operationId: get-domains
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Domain'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get all domains
+      tags:
+      - domains
+  /api/v1/links:
+    get:
+      description: Get list of links
+      operationId: get-all-links
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Link'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get all links
+      tags:
+      - links
+    post:
+      consumes:
+      - application/json
+      description: Add a new link
+      operationId: add-new-link
+      parameters:
+      - description: Link
+        in: body
+        name: link
+        required: true
+        schema:
+          $ref: '#/definitions/models.LinkBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Link'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Add a new link
+      tags:
+      - links
+  /api/v1/links/{id}:
+    delete:
+      description: Delete a link
+      operationId: delete-link
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Link'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Delete a link
+      tags:
+      - links
+    get:
+      description: Get a link
+      operationId: get-a-link
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Link'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get a link
+      tags:
+      - links
+    put:
+      consumes:
+      - application/json
+      description: Update a link
+      operationId: update-link
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Link
+        in: body
+        name: link
+        required: true
+        schema:
+          $ref: '#/definitions/models.LinkBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Link'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update a link
+      tags:
+      - links
+  /api/v1/links/{id}/qrcode:
+    get:
+      description: Generate a qr code for a link
+      operationId: generate-qr-code
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      - data:image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Generate a qr code for a link
+      tags:
+      - links
+  /api/v1/links/{id}/stats:
+    get:
+      description: Get stats of a link
+      operationId: get-link-stats
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Stat'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get stats of a link
+      tags:
+      - links
+  /api/v1/trackers:
+    get:
+      consumes:
+      - application/json
+      description: Get all trackers
+      operationId: get-trackers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tracker'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get all trackers
+      tags:
+      - trackers
+    post:
+      consumes:
+      - application/json
+      description: Generate a new tracker
+      operationId: generate-tracker
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tracker'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Generate a new tracker
+      tags:
+      - trackers
 schemes:
 - http
 - https

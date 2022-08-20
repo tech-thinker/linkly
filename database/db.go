@@ -76,10 +76,7 @@ func GetDB() *gorm.DB {
 	}
 
 	// Migrate the schema
-	DB.AutoMigrate(&models.URL{})
-	// Link the database to the models
 	DB.AutoMigrate(&models.Link{})
-	// Domain the database to the models
 	DB.AutoMigrate(&models.Domain{})
 
 	return DB

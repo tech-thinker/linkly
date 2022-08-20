@@ -7,30 +7,66 @@ import (
 )
 
 type Services interface {
-	URLService() controllers.URL
 	HealthCheckService() controllers.HealthCheck
+	LinkService() controllers.Link
+	URLService() controllers.URL
+	DomainService() controllers.Domain
+	TrackerService() controllers.Trackers
+	ViewService() controllers.Views
 }
 
 type services struct {
-	url         controllers.URL
 	healthCheck controllers.HealthCheck
+	link        controllers.Link
+	url         controllers.URL
+	domain      controllers.Domain
+	trackers    controllers.Trackers
+	view        controllers.Views
 }
 
+// HealthCheckService returns a health check service
+func (svc *services) HealthCheckService() controllers.HealthCheck {
+	return svc.healthCheck
+}
+
+// LinkService returns a link service
+func (svc *services) LinkService() controllers.Link {
+	return svc.link
+}
+
+// URLService returns a url service
 func (svc *services) URLService() controllers.URL {
 	return svc.url
 }
 
-func (svc *services) HealthCheckService() controllers.HealthCheck {
-	return svc.healthCheck
+// DomainService returns a domain service
+func (svc *services) DomainService() controllers.Domain {
+	return svc.domain
+}
+
+// TrackerService returns a tracker service
+func (svc *services) TrackerService() controllers.Trackers {
+	return svc.trackers
+}
+
+// ViewService returns a view service
+func (svc *services) ViewService() controllers.Views {
+	return svc.view
 }
 
 // NewServices initializes services
 func NewServices() Services {
 	db := database.GetDB()
 	return &services{
+		healthCheck: controllers.NewHealthCheck(),
+		link: controllers.NewLink(
+			repository.NewLink(db),
+		),
 		url: controllers.NewURL(
 			repository.NewURLRepo(db),
 		),
-		healthCheck: controllers.NewHealthCheck(),
+		domain:   controllers.NewDomain(),
+		trackers: controllers.NewTrackers(),
+		view:     controllers.NewViews(),
 	}
 }
