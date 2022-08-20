@@ -1,10 +1,5 @@
 package models
 
-// Error is used as the Response Body
-type Error struct {
-	Error ServiceError `json:"error"`
-}
-
 // ServiceError has fields for Service errors. All fields with no data will
 // be omitted
 type ServiceError struct {

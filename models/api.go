@@ -27,13 +27,12 @@ type QRCode struct {
 	Image   []byte `json:"image"`
 }
 
-// Domain struct
-type Domain struct {
-	ID uint64 `json:"id"`
+// Message is a struct that holds the message for the response
+type Message struct {
+	Message string `json:"message"`
 }
 
-// Response struct
-type Response struct {
-	Success bool        `json:"success"`
-	Data    interface{} `json:"urls"`
+// Error is used as the Response Body
+type Error struct {
+	Error ServiceError `json:"error"`
 }
