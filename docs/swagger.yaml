@@ -1,4 +1,75 @@
+basePath: /
+definitions:
+  controllers.Check:
+    properties:
+      alloc_bytes:
+        description: TotalAllocBytes is the bytes allocated and not yet freed.
+        type: integer
+      failures:
+        additionalProperties:
+          type: string
+        description: Failures holds the failed checks along with their messages.
+        type: object
+      goroutines_count:
+        description: GoroutinesCount is the number of the current goroutines.
+        type: integer
+      heap_objects_count:
+        description: HeapObjectsCount is the number of objects in the go heap.
+        type: integer
+      startup:
+        description: StartUp is the time to boot up the system.
+        type: string
+      status:
+        description: Status is the check status.
+        type: string
+      timestamp:
+        description: Timestamp is the time in which the check occurred.
+        type: string
+      total_alloc_bytes:
+        description: TotalAllocBytes is the total bytes allocated.
+        type: integer
+      uptime:
+        description: Uptime is the time in which the check occurred.
+        type: string
+      version:
+        description: Version is the go version.
+        type: string
+    type: object
+host: localhost:8080
 info:
-  contact: {}
-paths: {}
+  contact:
+    name: API Support
+    url: /support
+  description: URL shortener API
+  license:
+    name: MIT License
+    url: https://github.com/tech-thinker/linkly/blob/main/LICENSE
+  termsOfService: /terms/
+  title: Linkly API
+  version: "1.0"
+paths:
+  /api/health:
+    get:
+      description: checks the health of the system.
+      operationId: healthcheck
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.Check'
+      summary: Show the status of the system.
+      tags:
+      - health
+schemes:
+- http
+- https
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  BasicAuth:
+    type: basic
 swagger: "2.0"

@@ -20,11 +20,13 @@ import (
 // @contact.email
 // @license.name MIT License
 // @license.url https://github.com/tech-thinker/linkly/blob/main/LICENSE
-// @host localhost:3000
+// @host localhost:8080
 // @BasePath /
 // @schemes http https
 // @securityDefinitions.basic BasicAuth
 // @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 //go:embed views/*
 var viewsFs embed.FS

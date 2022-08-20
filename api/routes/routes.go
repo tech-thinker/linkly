@@ -49,15 +49,15 @@ func InitRoutes(router *gin.Engine) {
 
 	// API Routes
 	api := router.Group("/api")
-	// v1 := api.Group("/v1")
-	// api.Use(middleware.CORSMiddleware())
+	api.Use(middleware.CORSMiddleware())
+	v1 := api.Group("/v1")
 	{
 		// health check
 		api.GET("/health", func(c *gin.Context) {
 			svc.HealthCheckService().HealthCheck(c, StartTime, BootTime)
 		})
 		// links routes
-		links := api.Group("/links")
+		links := v1.Group("/links")
 		{
 			// link routes
 			links.GET("", func(c *gin.Context) {
@@ -86,7 +86,7 @@ func InitRoutes(router *gin.Engine) {
 			)
 		}
 		// domains routes
-		domains := api.Group("/domains")
+		domains := v1.Group("/domains")
 		{
 			// domain routes
 			domains.GET("", func(c *gin.Context) {
@@ -98,7 +98,7 @@ func InitRoutes(router *gin.Engine) {
 			})
 		}
 		// tracker routes
-		tracker := api.Group("/trackers")
+		tracker := v1.Group("/trackers")
 		{
 			// tracker routes
 			tracker.GET("", func(c *gin.Context) {
