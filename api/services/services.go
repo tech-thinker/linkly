@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/tech-thinker/linkly/api/controllers"
-	"github.com/tech-thinker/linkly/db"
+	"github.com/tech-thinker/linkly/database"
 	"github.com/tech-thinker/linkly/repository"
 )
 
@@ -26,7 +26,7 @@ func (svc *services) HealthCheckService() controllers.HealthCheck {
 
 // NewServices initializes services
 func NewServices() Services {
-	db := db.GetDB()
+	db := database.GetDB()
 	return &services{
 		url: controllers.NewURL(
 			repository.NewURLRepo(db),

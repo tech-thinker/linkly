@@ -24,28 +24,31 @@ var (
 	BootTime  time.Duration
 )
 
-func InitRoutes(routes *gin.Engine) {
+func InitRoutes(router *gin.Engine) {
+	// Initialize the services
 	svc := services.NewServices()
+
 	// Serve the frontend
-	// This will ensure that the files are served correctly
 	fsRoot, err := fs.Sub(ViewsFs, "views")
 	if err != nil {
 		log.Println(err)
 	}
-	routes.NoRoute(gin.WrapH(http.FileServer(http.FS(fsRoot))))
+	router.NoRoute(gin.WrapH(http.FileServer(http.FS(fsRoot))))
 
 	// Backend API
 	docs.SwaggerInfo.BasePath = "/"
 
-	// redirect route
-	routes.GET("/:short_url", func(c *gin.Context) {
+	// URL Redirect
+	router.GET("/:short_url", func(c *gin.Context) {
 		svc.URLService().GetAndRedirect(c)
 	})
-	routes.GET("/:short_url/qr", func(c *gin.Context) {
+	// Generate QR Code for the short url
+	router.GET("/:short_url/qr", func(c *gin.Context) {
 		svc.URLService().GenQR(c)
 	})
-	// api routes group
-	api := routes.Group("/api")
+
+	// API Routes
+	api := router.Group("/api")
 	// v1 := api.Group("/v1")
 	// api.Use(middleware.CORSMiddleware())
 	{
@@ -53,7 +56,7 @@ func InitRoutes(routes *gin.Engine) {
 		api.GET("/health", func(c *gin.Context) {
 			svc.HealthCheckService().HealthCheck(c, StartTime, BootTime)
 		})
-		// links routes group
+		// links routes
 		links := api.Group("/links")
 		{
 			// link routes
@@ -82,10 +85,10 @@ func InitRoutes(routes *gin.Engine) {
 			},
 			)
 		}
-		// domains routes group
+		// domains routes
 		domains := api.Group("/domains")
 		{
-			// domains routes
+			// domain routes
 			domains.GET("", func(c *gin.Context) {
 				c.JSON(http.StatusNotImplemented, gin.H{
 					"message": "success",
@@ -94,7 +97,7 @@ func InitRoutes(routes *gin.Engine) {
 
 			})
 		}
-		// tracker
+		// tracker routes
 		tracker := api.Group("/trackers")
 		{
 			// tracker routes
@@ -112,5 +115,5 @@ func InitRoutes(routes *gin.Engine) {
 			})
 		}
 	}
-	routes.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }

@@ -2,8 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,14 +26,11 @@ type url struct {
 
 // Add a new url
 func (u *url) Add(ctx *gin.Context) {
-	bytes, err := ioutil.ReadAll(ctx.Request.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	var url models.URL
-	err = json.Unmarshal(bytes, &url)
+	err := json.NewDecoder(ctx.Request.Body).Decode(&url)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	// Get IP from context
@@ -132,17 +127,13 @@ func (u *url) GetAll(ctx *gin.Context) {
 
 // Update a url
 func (u *url) Update(ctx *gin.Context) {
-	// Read the body of the request
-	bytes, err := ioutil.ReadAll(ctx.Request.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Unmarshal the json into a url struct
 	var url models.URL
-	err = json.Unmarshal(bytes, &url)
+	// Unmarshal the json into a url struct
+	err := json.NewDecoder(ctx.Request.Body).Decode(&url)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
+
 	// Update the url in the database
 	err = u.urlRepo.Update(ctx, &url)
 	if err != nil {
