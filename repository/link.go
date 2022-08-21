@@ -83,12 +83,12 @@ func (repo *link) Create(ctx *gin.Context, link *models.Link) error {
 func (repo *link) Read(ctx *gin.Context, link models.Link) (models.Link, error) {
 	var l models.Link
 	// check if link is valid
-	if link.ID == "" && link.Address == nil {
+	if link.ID == "" && link.Target == nil {
 		return l, errors.New("id is empty")
 	}
 	// if link is not found then try to find link by address
 	if link.ID == "" {
-		result := repo.db.Find(&l, "address = ?", link.Address)
+		result := repo.db.Find(&l, "target = ?", link.Target)
 		if result.Error != nil {
 			return l, result.Error
 		}

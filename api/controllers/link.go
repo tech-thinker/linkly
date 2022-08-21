@@ -89,7 +89,7 @@ func (l *link) AddLink(c *gin.Context) {
 		Target: &link.Target,
 	}
 	// check if link is already exists
-	newLink, err := l.link.Read(c, newLink)
+	oldLink, err := l.link.Read(c, newLink)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.Error{
 			Error: models.ServiceError{
@@ -101,7 +101,7 @@ func (l *link) AddLink(c *gin.Context) {
 		})
 		return
 	}
-	if newLink.ID != "" && time.Since(*newLink.ExpireAt).Seconds() < 0 {
+	if oldLink.ID != "" && time.Since(*oldLink.ExpireAt).Seconds() < 0 {
 		c.JSON(http.StatusConflict, models.Error{
 			Error: models.ServiceError{
 				Type:   "conflict",
@@ -114,9 +114,7 @@ func (l *link) AddLink(c *gin.Context) {
 	}
 
 	// Convert link to model->Link
-	if newLink.ID == "" {
-		newLink.ID = utils.GenerateUUID()
-	}
+	newLink.ID = utils.GenerateUUID()
 	newLink.Target = &link.Target
 	if link.CustomURL != "" {
 		url := c.Request.Host

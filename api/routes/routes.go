@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	jwtMiddleware "github.com/mrinjamul/mrinjamul-auth/middleware"
 	"github.com/tech-thinker/linkly/api/services"
 	"github.com/tech-thinker/linkly/docs"
 	"github.com/tech-thinker/linkly/middleware"
@@ -59,10 +60,10 @@ func InitRoutes(router *gin.Engine) {
 		links := v1.Group("/links")
 		{
 			// link routes
-			links.GET("", func(c *gin.Context) {
+			links.GET("", jwtMiddleware.JWTAuthAdmin(), func(c *gin.Context) {
 				svc.LinkService().GetLinks(c)
 			})
-			links.POST("", func(c *gin.Context) {
+			links.POST("", jwtMiddleware.JWTAuth(), func(c *gin.Context) {
 				svc.LinkService().AddLink(c)
 			})
 			links.GET("/:id", func(c *gin.Context) {
@@ -71,10 +72,10 @@ func InitRoutes(router *gin.Engine) {
 			links.GET("/:id/qrcode", func(c *gin.Context) {
 				svc.LinkService().GenQRCode(c)
 			})
-			links.PATCH("/:id", func(c *gin.Context) {
+			links.PATCH("/:id", jwtMiddleware.JWTAuth(), func(c *gin.Context) {
 				svc.LinkService().UpdateLink(c)
 			})
-			links.DELETE("/:id", func(c *gin.Context) {
+			links.DELETE("/:id", jwtMiddleware.JWTAuth(), func(c *gin.Context) {
 				svc.LinkService().DeleteLink(c)
 			})
 			links.GET("/:id/stats", func(c *gin.Context) {
