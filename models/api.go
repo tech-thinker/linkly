@@ -10,6 +10,7 @@ type QRCode struct {
 
 // Message is a struct that holds the message for the response
 type Message struct {
+	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 

@@ -12,7 +12,6 @@ type Services interface {
 	URLService() controllers.URL
 	DomainService() controllers.Domain
 	TrackerService() controllers.Trackers
-	ViewService() controllers.Views
 }
 
 type services struct {
@@ -21,7 +20,6 @@ type services struct {
 	url         controllers.URL
 	domain      controllers.Domain
 	trackers    controllers.Trackers
-	view        controllers.Views
 }
 
 // HealthCheckService returns a health check service
@@ -49,11 +47,6 @@ func (svc *services) TrackerService() controllers.Trackers {
 	return svc.trackers
 }
 
-// ViewService returns a view service
-func (svc *services) ViewService() controllers.Views {
-	return svc.view
-}
-
 // NewServices initializes services
 func NewServices() Services {
 	db := database.GetDB()
@@ -65,8 +58,9 @@ func NewServices() Services {
 		url: controllers.NewURL(
 			repository.NewURLRepo(db),
 		),
-		domain:   controllers.NewDomain(),
-		trackers: controllers.NewTrackers(),
-		view:     controllers.NewViews(),
+		domain: controllers.NewDomain(),
+		trackers: controllers.NewTrackers(
+			repository.NewTracker(db),
+		),
 	}
 }

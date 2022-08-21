@@ -2,6 +2,9 @@ package routes
 
 import (
 	"embed"
+	"io/fs"
+	"log"
+	"net/http"
 	"time"
 
 	"github.com/tech-thinker/linkly/api/services"
@@ -26,9 +29,12 @@ func InitRoutes(router *gin.Engine) {
 	svc := services.NewServices()
 
 	// Serve the frontend
-	router.NoRoute(func(ctx *gin.Context) {
-		svc.ViewService().Index(ctx, ViewsFs)
-	})
+	fsRoot, err := fs.Sub(ViewsFs, "views")
+	if err != nil {
+		log.Println(err)
+	}
+	router.NoRoute(gin.WrapH(http.FileServer(http.FS(fsRoot))))
+
 	// URL Redirect
 	router.GET("/:link", func(c *gin.Context) {
 		svc.URLService().Redirect(c)
@@ -94,6 +100,18 @@ func InitRoutes(router *gin.Engine) {
 			})
 			tracker.GET("/gen", func(c *gin.Context) {
 				svc.TrackerService().GenerateTracker(c)
+			})
+			tracker.GET("/:id", func(c *gin.Context) {
+				svc.TrackerService().GetTracker(c)
+			})
+			tracker.GET("/:id/qr.png", func(c *gin.Context) {
+				svc.TrackerService().QRCode(c)
+			})
+			tracker.GET("/:id/status", func(c *gin.Context) {
+				svc.TrackerService().Status(c)
+			})
+			tracker.DELETE("/:id", func(c *gin.Context) {
+				svc.TrackerService().DeleteTracker(c)
 			})
 		}
 	}

@@ -144,6 +144,13 @@ definitions:
       target:
         type: string
     type: object
+  models.Message:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
   models.OS:
     properties:
       name:
@@ -152,6 +159,19 @@ definitions:
       value:
         description: Value is the number of times the operating system was visited
         type: integer
+    type: object
+  models.QRCode:
+    properties:
+      content:
+        type: string
+      id:
+        type: integer
+      image:
+        items:
+          type: integer
+        type: array
+      user_id:
+        type: string
     type: object
   models.Referrer:
     properties:
@@ -246,15 +266,32 @@ definitions:
     type: object
   models.Tracker:
     properties:
-      content:
+      created_at:
+        type: string
+      description:
         type: string
       id:
         type: string
-      image:
-        items:
-          type: integer
-        type: array
+      ip:
+        type: string
+      updated_at:
+        type: string
+      url:
+        type: string
       user_id:
+        type: string
+      visit_count:
+        type: integer
+    type: object
+  models.TrackerStatus:
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      seen:
+        type: boolean
+      url:
         type: string
     type: object
 host: localhost:8080
@@ -270,6 +307,66 @@ info:
   title: Linkly API
   version: "1.0"
 paths:
+  /{link}:
+    get:
+      consumes:
+      - application/json
+      description: Redirect to the target url
+      operationId: redirect
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Redirect to the target url
+      tags:
+      - URL Shortener
+  /{link}/qrcode:
+    get:
+      consumes:
+      - application/json
+      description: Generate a QR code for the short url
+      operationId: generate-qr
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.QRCode'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Generate a QR code for the short url
+      tags:
+      - URL Shortener
+  /{link}/track:
+    get:
+      consumes:
+      - application/json
+      description: Track a url
+      operationId: track
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Link'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Track a url
+      tags:
+      - URL Shortener
   /api/health:
     get:
       description: checks the health of the system.
@@ -459,9 +556,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              type: integer
-            type: array
+            $ref: '#/definitions/models.QRCode'
         "404":
           description: Not Found
           schema:
@@ -523,7 +618,99 @@ paths:
       summary: Get all trackers
       tags:
       - trackers
-    post:
+  /api/v1/trackers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a tracker
+      operationId: delete-tracker
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/models.Message'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Delete a tracker
+      tags:
+      - trackers
+    get:
+      consumes:
+      - application/json
+      description: Get a tracker
+      operationId: get-tracker
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tracker'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get a tracker
+      tags:
+      - trackers
+  /api/v1/trackers/{id}/qr.png:
+    get:
+      consumes:
+      - application/json
+      description: Get a qr code png for a tracker
+      operationId: get-qr-code
+      produces:
+      - data:image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tracker'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get a qr code png for a tracker
+      tags:
+      - trackers
+  /api/v1/trackers/{id}/status:
+    get:
+      consumes:
+      - application/json
+      description: Get the status of the tracker
+      operationId: get-tracker-status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TrackerStatus'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get the status of the tracker
+      tags:
+      - trackers
+  /api/v1/trackers/gen:
+    get:
       consumes:
       - application/json
       description: Generate a new tracker
